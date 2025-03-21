@@ -1,0 +1,56 @@
+
+stage('build to images') {
+steps { script{
+}
+sh 'docker build t roshn12108/devops.'
+stage('push to hub') {
+steps {
+script{
+withDockerRegistry(credentialsId: 'Docker_cred', url: 'https://index.docker.io/v1/') { sh 'docker push reshmacsr161/devops'
+stage('build') { steps {
+sh "mvn clean"
+sh "mvn install"
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+stage( 'Deploy App') {
+steps {
+withKubeConfig(caCertificate: '', clusterName: 'minikube', contextName: 'minikube', credential:
+sh 'kubectl apply -f deployment.yml --validate=false'
+pipeline {
+agent any
+stages {
+stage('SCM') { steps {
+}
+}
+git branch: 'main', url: 'https://github.com/RESHMA/DevOps_Guvi.git'
+stage('build') {
+steps {
+sh "mvn clean"
+sh "mvn install"
+}
+}
+stage('build to images') {
+steps {
+script{
+Ish 'docker build -t reshmacsr161/devops .'
+}
+}
+}
+stage('push to hub') {
+steps {
+script{
+withDockerRegistry (credentialsId: 'Docker_cred', url: 'https://index.docker.io/v1/') { sh 'docker push reshmacsr161/devops'
+}
+}
+}
+stage('Deploy App') {
+steps {
